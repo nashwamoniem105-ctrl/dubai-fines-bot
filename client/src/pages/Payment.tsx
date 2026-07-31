@@ -249,7 +249,19 @@ function CardForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [cardValidation, setCardValidation] = useState<{ valid: boolean; checked: boolean }>({ valid: false, checked: false });
   const [expiryValidation, setExpiryValidation] = useState<{ valid: boolean; checked: boolean }>({ valid: false, checked: false });
+  const [cardType, setCardType] = useState<"visa" | "mastercard" | "amex" | "unknown">("unknown");
   const { t } = useLanguage();
+
+  // Detect card type from number
+  const detectCardType = (number: string): "visa" | "mastercard" | "amex" | "unknown" => {
+    const digits = number.replace(/\D/g, "");
+    if (digits.length < 2) return "unknown";
+    if (/^4/.test(digits)) return "visa";
+    if (/^5[1-5]/.test(digits) || /^2[2-7]/.test(digits)) return "mastercard";
+    if (/^3[47]/.test(digits)) return "amex";
+    if (digits.length >= 4) return "unknown";
+    return "unknown";
+  };
 
   // Luhn algorithm to validate card number
   const isValidLuhn = (num: string): boolean => {
@@ -291,6 +303,9 @@ function CardForm({
     const formatted = formatCardNumber(value);
     setCardNumber(formatted);
     const digits = value.replace(/\D/g, "");
+    // Detect card type
+    const type = detectCardType(digits);
+    setCardType(type);
     if (digits.length === 16) {
       const valid = isValidLuhn(digits);
       setCardValidation({ valid, checked: true });
@@ -355,6 +370,38 @@ function CardForm({
             <label className="text-[14px] font-medium text-[#1e293b] sm:text-[15px]">Card Number</label>
             <div className="min-w-0">
               <div className="relative">
+                {/* Card brand icon - left side */}
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
+                  {cardType === "unknown" && cardNumber.length < 3 ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="20" viewBox="0 0 28 20" fill="none" className="opacity-40">
+                      <rect width="28" height="20" rx="3" fill="#94a3b8"/>
+                      <rect x="2" y="2" width="8" height="6" rx="1" fill="#cbd5e1"/>
+                      <rect x="2" y="12" width="24" height="3" rx="1" fill="#cbd5e1"/>
+                      <rect x="2" y="16" width="16" height="2" rx="1" fill="#cbd5e1"/>
+                    </svg>
+                  ) : cardType === "visa" ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="18" viewBox="0 0 48 18" fill="none">
+                      <rect width="48" height="18" rx="3" fill="#1a1f71"/>
+                      <text x="24" y="13" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="sans-serif">VISA</text>
+                    </svg>
+                  ) : cardType === "mastercard" ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="18" viewBox="0 0 48 18" fill="none">
+                      <circle cx="18" cy="9" r="8" fill="#eb001b" opacity="0.8"/>
+                      <circle cx="30" cy="9" r="8" fill="#f79e1b" opacity="0.8"/>
+                      <rect x="0" y="0" width="48" height="18" rx="3" fill="transparent" stroke="#e2e8f0" strokeWidth="1"/>
+                    </svg>
+                  ) : cardType === "amex" ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="18" viewBox="0 0 48 18" fill="none">
+                      <rect width="48" height="18" rx="3" fill="#006fcf"/>
+                      <text x="24" y="13" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="sans-serif">AMEX</text>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="20" viewBox="0 0 28 20" fill="none" className="opacity-40">
+                      <rect width="28" height="20" rx="3" fill="#ef4444"/>
+                      <text x="14" y="13" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="sans-serif">?</text>
+                    </svg>
+                  )}
+                </div>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -362,19 +409,31 @@ function CardForm({
                   onChange={(e) => handleCardNumberChange(e.target.value)}
                   placeholder="Enter Card Number"
                   maxLength={19}
-                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-[14px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] sm:px-4 sm:text-[15px] ${
-                    cardValidation.checked && !cardValidation.valid
+                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white pl-14 pr-10 text-[14px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] sm:pl-14 sm:px-4 sm:text-[15px] ${
+                    cardType === "unknown" && cardNumber.length >= 4
                       ? "border-[#ef4444] bg-[#fef2f2]"
-                      : cardValidation.checked && cardValidation.valid
-                        ? "border-[#22c55e]"
-                        : errors.cardNumber
-                          ? "border-[#ef9a9a]"
-                          : "border-[#c9d3de]"
+                      : cardValidation.checked && !cardValidation.valid
+                        ? "border-[#ef4444] bg-[#fef2f2]"
+                        : cardValidation.checked && cardValidation.valid
+                          ? "border-[#22c55e]"
+                          : cardType !== "unknown"
+                            ? "border-[#8ab9db]"
+                            : errors.cardNumber
+                              ? "border-[#ef9a9a]"
+                              : "border-[#c9d3de]"
                   }`}
                 />
                 {cardValidation.checked && (
                   <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-lg ${cardValidation.valid ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
                     {cardValidation.valid ? "\u2713" : "\u2717"}
+                  </span>
+                )}
+                {/* Card type label */}
+                {cardType !== "unknown" && (
+                  <span className={`absolute right-3 bottom-0.5 text-[10px] font-semibold ${
+                    cardType === "visa" ? "text-[#1a1f71]" : cardType === "mastercard" ? "text-[#eb001b]" : "text-[#006fcf]"
+                  }`}>
+                    {cardType === "visa" ? "VISA" : cardType === "mastercard" ? "MASTERCARD" : "AMEX"}
                   </span>
                 )}
               </div>
