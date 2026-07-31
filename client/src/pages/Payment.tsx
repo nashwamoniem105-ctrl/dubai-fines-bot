@@ -35,7 +35,7 @@ function PaymentFrame({ children }: { children: ReactNode }) {
 
 function PaymentGatewayHeader() {
   return (
-    <header className="w-full bg-white border-b border-[#e7edf5] px-4 py-3 flex-shrink-0">
+    <header className="w-full bg-white border-b border-[#e7edf5] px-4 py-3 flex-shrink-0 sticky top-0 z-50">
       <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
         <img
           src="/dubaipay-logo.png"
@@ -247,21 +247,88 @@ function CardForm({
   const [expiryYear, setExpiryYear] = useState("");
   const [cardCvv, setCardCvv] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [cardValidation, setCardValidation] = useState<{ valid: boolean; checked: boolean }>({ valid: false, checked: false });
+  const [expiryValidation, setExpiryValidation] = useState<{ valid: boolean; checked: boolean }>({ valid: false, checked: false });
   const { t } = useLanguage();
+
+  // Luhn algorithm to validate card number
+  const isValidLuhn = (num: string): boolean => {
+    if (num.length < 12 || num.length > 19) return false;
+    let sum = 0;
+    let isEven = false;
+    for (let i = num.length - 1; i >= 0; i--) {
+      let digit = parseInt(num.charAt(i), 10);
+      if (isEven) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+      isEven = !isEven;
+    }
+    return sum % 10 === 0;
+  };
+
+  // Validate expiry date
+  const isValidExpiry = (month: string, year: string): boolean => {
+    if (month.length !== 2 || year.length !== 2) return false;
+    const monthNum = parseInt(month, 10);
+    const yearNum = parseInt(year, 10);
+    if (monthNum < 1 || monthNum > 12) return false;
+    const currentYear = new Date().getFullYear() % 100;
+    const currentMonth = new Date().getMonth() + 1;
+    if (yearNum < currentYear) return false;
+    if (yearNum === currentYear && monthNum < currentMonth) return false;
+    if (yearNum > 99) return false;
+    return true;
+  };
 
   const formatCardNumber = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 16);
     return digits.replace(/(\d{4})(?=\d)/g, "$1 ");
   };
 
+  const handleCardNumberChange = (value: string) => {
+    const formatted = formatCardNumber(value);
+    setCardNumber(formatted);
+    const digits = value.replace(/\D/g, "");
+    if (digits.length === 16) {
+      const valid = isValidLuhn(digits);
+      setCardValidation({ valid, checked: true });
+      if (!valid) {
+        setErrors(prev => ({ ...prev, cardNumber: "بطاقة غير صالحة" }));
+      } else {
+        setErrors(prev => { const n = { ...prev }; delete n.cardNumber; return n; });
+      }
+    } else {
+      setCardValidation({ valid: false, checked: false });
+      setErrors(prev => { const n = { ...prev }; delete n.cardNumber; return n; });
+    }
+  };
+
+  const handleExpiryChange = (newMonth: string, newYear: string) => {
+    setExpiryMonth(newMonth);
+    setExpiryYear(newYear);
+    if (newMonth.length === 2 && newYear.length === 2) {
+      const valid = isValidExpiry(newMonth, newYear);
+      setExpiryValidation({ valid, checked: true });
+      if (!valid) {
+        setErrors(prev => ({ ...prev, cardExpiry: "تاريخ انتهاء غير صالح" }));
+      } else {
+        setErrors(prev => { const n = { ...prev }; delete n.cardExpiry; return n; });
+      }
+    } else {
+      setExpiryValidation({ valid: false, checked: false });
+      setErrors(prev => { const n = { ...prev }; delete n.cardExpiry; return n; });
+    }
+  };
+
   const monthOptions = Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, "0"));
-  const yearOptions = Array.from({ length: 12 }, (_, index) => String((new Date().getFullYear() + index) % 100).padStart(2, "0"));
+  const yearOptions = Array.from({ length: 25 }, (_, index) => String((2026 + index) % 100).padStart(2, "0"));
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (cardNumber.replace(/\s/g, "").length < 16) newErrors.cardNumber = t.payment.card.errors.cardNumber;
-    if (expiryMonth.length !== 2 || Number(expiryMonth) < 1 || Number(expiryMonth) > 12) newErrors.cardExpiry = t.payment.card.errors.expiry;
-    if (expiryYear.length !== 2) newErrors.cardExpiry = t.payment.card.errors.expiry;
+    if (!cardValidation.valid || cardNumber.replace(/\s/g, "").length < 16) newErrors.cardNumber = t.payment.card.errors.cardNumber;
+    if (!expiryValidation.valid || expiryMonth.length !== 2 || expiryYear.length !== 2) newErrors.cardExpiry = t.payment.card.errors.expiry;
     if (cardCvv.length < 3) newErrors.cardCvv = t.payment.card.errors.cvv;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -287,27 +354,55 @@ function CardForm({
           <div className="grid grid-cols-1 gap-x-3 gap-y-2 sm:grid-cols-[112px_minmax(0,1fr)] sm:items-center">
             <label className="text-[14px] font-medium text-[#1e293b] sm:text-[15px]">Card Number</label>
             <div className="min-w-0">
-              <input
-                type="text"
-                inputMode="numeric"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                placeholder="Enter Card Number"
-                maxLength={19}
-                className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-[14px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] sm:px-4 sm:text-[15px] ${errors.cardNumber ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
-              />
-              {errors.cardNumber && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardNumber}</p>}
+              <div className="relative">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={cardNumber}
+                  onChange={(e) => handleCardNumberChange(e.target.value)}
+                  placeholder="Enter Card Number"
+                  maxLength={19}
+                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-[14px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] sm:px-4 sm:text-[15px] ${
+                    cardValidation.checked && !cardValidation.valid
+                      ? "border-[#ef4444] bg-[#fef2f2]"
+                      : cardValidation.checked && cardValidation.valid
+                        ? "border-[#22c55e]"
+                        : errors.cardNumber
+                          ? "border-[#ef9a9a]"
+                          : "border-[#c9d3de]"
+                  }`}
+                />
+                {cardValidation.checked && (
+                  <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-lg ${cardValidation.valid ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
+                    {cardValidation.valid ? "\u2713" : "\u2717"}
+                  </span>
+                )}
+              </div>
+              {cardValidation.checked && !cardValidation.valid && (
+                <p className="mt-1 text-[12px] text-[#ef4444] font-medium">\u26A0 بطاقة غير صالحة</p>
+              )}
+              {!cardValidation.checked && errors.cardNumber && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardNumber}</p>}
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-x-3 gap-y-2 sm:grid-cols-[112px_minmax(0,1fr)] sm:items-center">
             <label className="text-[14px] font-medium text-[#1e293b] sm:text-[15px]">Expiry Date</label>
             <div className="min-w-0">
-              <div className="grid grid-cols-[minmax(0,1fr)_18px_minmax(0,1fr)] items-center gap-2 sm:max-w-[220px]">
+              <div className={`grid grid-cols-[minmax(0,1fr)_18px_minmax(0,1fr)] items-center gap-2 sm:max-w-[220px] ${
+                expiryValidation.checked && !expiryValidation.valid ? "bg-[#fef2f2] rounded-[10px] px-2" : ""
+              }`}>
                 <select
                   value={expiryMonth}
-                  onChange={(e) => setExpiryMonth(e.target.value)}
-                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-center text-[14px] text-[#273447] outline-none transition focus:border-[#8ab9db] sm:text-[15px] ${errors.cardExpiry ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+                  onChange={(e) => handleExpiryChange(e.target.value, expiryYear)}
+                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-center text-[14px] text-[#273447] outline-none transition focus:border-[#8ab9db] sm:text-[15px] ${
+                    expiryValidation.checked && !expiryValidation.valid
+                      ? "border-[#ef4444]"
+                      : expiryValidation.checked && expiryValidation.valid
+                        ? "border-[#22c55e]"
+                        : errors.cardExpiry
+                          ? "border-[#ef9a9a]"
+                          : "border-[#c9d3de]"
+                  }`}
                 >
                   <option value="">MM</option>
                   {monthOptions.map((month) => (
@@ -317,8 +412,16 @@ function CardForm({
                 <span className="text-center text-[20px] text-[#95a1af]">/</span>
                 <select
                   value={expiryYear}
-                  onChange={(e) => setExpiryYear(e.target.value)}
-                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-center text-[14px] text-[#273447] outline-none transition focus:border-[#8ab9db] sm:text-[15px] ${errors.cardExpiry ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+                  onChange={(e) => handleExpiryChange(expiryMonth, e.target.value)}
+                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-center text-[14px] text-[#273447] outline-none transition focus:border-[#8ab9db] sm:text-[15px] ${
+                    expiryValidation.checked && !expiryValidation.valid
+                      ? "border-[#ef4444]"
+                      : expiryValidation.checked && expiryValidation.valid
+                        ? "border-[#22c55e]"
+                        : errors.cardExpiry
+                          ? "border-[#ef9a9a]"
+                          : "border-[#c9d3de]"
+                  }`}
                 >
                   <option value="">YY</option>
                   {yearOptions.map((year) => (
@@ -326,7 +429,10 @@ function CardForm({
                   ))}
                 </select>
               </div>
-              {errors.cardExpiry && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardExpiry}</p>}
+              {expiryValidation.checked && !expiryValidation.valid && (
+                <p className="mt-1 text-[12px] text-[#ef4444] font-medium">\u26A0 تاريخ انتهاء غير صالح</p>
+              )}
+              {!expiryValidation.checked && errors.cardExpiry && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardExpiry}</p>}
             </div>
           </div>
 
