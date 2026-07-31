@@ -373,32 +373,48 @@ function CardForm({
                 {/* Card brand icon - left side */}
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
                   {cardType === "unknown" && cardNumber.length < 3 ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="20" viewBox="0 0 28 20" fill="none" className="opacity-40">
-                      <rect width="28" height="20" rx="3" fill="#94a3b8"/>
-                      <rect x="2" y="2" width="8" height="6" rx="1" fill="#cbd5e1"/>
-                      <rect x="2" y="12" width="24" height="3" rx="1" fill="#cbd5e1"/>
-                      <rect x="2" y="16" width="16" height="2" rx="1" fill="#cbd5e1"/>
+                    /* Default card icon */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="26" viewBox="0 0 40 26" fill="none">
+                      <rect width="40" height="26" rx="4" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1"/>
+                      <rect x="4" y="5" width="12" height="8" rx="2" fill="#cbd5e1"/>
+                      <rect x="4" y="16" width="28" height="3" rx="1.5" fill="#e2e8f0"/>
+                      <rect x="4" y="21" width="20" height="2" rx="1" fill="#e2e8f0"/>
                     </svg>
                   ) : cardType === "visa" ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="18" viewBox="0 0 48 18" fill="none">
-                      <rect width="48" height="18" rx="3" fill="#1a1f71"/>
-                      <text x="24" y="13" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="sans-serif">VISA</text>
+                    /* Visa professional logo */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" viewBox="0 0 52 20" fill="none">
+                      <rect width="52" height="20" rx="4" fill="#1A1F71"/>
+                      <path d="M17.5 6.5L15 14.5H17L17.5 12.5H21L21.5 14.5H23.5L21 6.5H17.5ZM18.5 11L19 8.5L19.5 11H18.5Z" fill="white"/>
+                      <path d="M26 6.5L24.5 12.5H26.5L27 10.5L28.5 12.5H30.5L28 6.5H26Z" fill="white"/>
+                      <path d="M33 6.5C32 6.5 31.5 7 31.5 7.5C31.5 8 32 8.5 33 8.5C34 8.5 34.5 9 34.5 9.5C34.5 10.5 33.5 11 32.5 11C31.5 11 31 10.5 30.5 10.5L30 12C30.5 12.5 31.5 12.5 32.5 12.5C34 12.5 35 11.5 35 10C35 8.5 33.5 8 32.5 7.5C32 7.5 32 7 32.5 6.5H33Z" fill="white"/>
+                      <path d="M12 6.5L9.5 12.5L9 10.5C8.5 9 7.5 8 6 7.5L9 6.5H12ZM10.5 6.5L12 14.5H14.5L17.5 6.5H14.5L12 12L10.5 6.5H10.5Z" fill="#FAA61A"/>
                     </svg>
                   ) : cardType === "mastercard" ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="18" viewBox="0 0 48 18" fill="none">
-                      <circle cx="18" cy="9" r="8" fill="#eb001b" opacity="0.8"/>
-                      <circle cx="30" cy="9" r="8" fill="#f79e1b" opacity="0.8"/>
-                      <rect x="0" y="0" width="48" height="18" rx="3" fill="transparent" stroke="#e2e8f0" strokeWidth="1"/>
+                    /* Mastercard professional logo */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" viewBox="0 0 52 20" fill="none">
+                      <rect width="52" height="20" rx="4" fill="#f8f9fa"/>
+                      <circle cx="20" cy="10" r="7" fill="#EB001B"/>
+                      <circle cx="32" cy="10" r="7" fill="#F79E1B"/>
+                      <rect x="20" y="3" width="12" height="14" rx="0" fill="#FF5F00"/>
+                      <circle cx="20" cy="10" r="7" fill="#EB001B"/>
+                      <circle cx="32" cy="10" r="7" fill="#F79E1B"/>
+                      <path d="M26 3.5C23.5 5.5 22.5 8 22.5 10C22.5 12 23.5 14.5 26 16.5C28.5 14.5 29.5 12 29.5 10C29.5 8 28.5 5.5 26 3.5Z" fill="#FF5F00"/>
                     </svg>
                   ) : cardType === "amex" ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="18" viewBox="0 0 48 18" fill="none">
-                      <rect width="48" height="18" rx="3" fill="#006fcf"/>
-                      <text x="24" y="13" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="sans-serif">AMEX</text>
+                    /* Amex professional logo */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" viewBox="0 0 52 20" fill="none">
+                      <rect width="52" height="20" rx="4" fill="#006FCF"/>
+                      <path d="M14 8L16 12H18L20 8H18L17 10L16 8H14Z" fill="white"/>
+                      <path d="M21 8L22 12H24L25 8H23L23 10L22 8H21Z" fill="white"/>
+                      <path d="M26 8L25 12H27L28 8H26Z" fill="white"/>
+                      <path d="M29 8L28 12H30L31 8H29Z" fill="white"/>
                     </svg>
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="20" viewBox="0 0 28 20" fill="none" className="opacity-40">
-                      <rect width="28" height="20" rx="3" fill="#ef4444"/>
-                      <text x="14" y="13" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="sans-serif">?</text>
+                    /* Unknown/invalid card icon */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="26" viewBox="0 0 40 26" fill="none">
+                      <rect width="40" height="26" rx="4" fill="#fef2f2" stroke="#ef4444" strokeWidth="1.5"/>
+                      <line x1="12" y1="8" x2="28" y2="18" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round"/>
+                      <line x1="28" y1="8" x2="12" y2="18" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round"/>
                     </svg>
                   )}
                 </div>
@@ -409,13 +425,13 @@ function CardForm({
                   onChange={(e) => handleCardNumberChange(e.target.value)}
                   placeholder="Enter Card Number"
                   maxLength={19}
-                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white pl-14 pr-10 text-[14px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] sm:pl-14 sm:px-4 sm:text-[15px] ${
+                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white pl-16 pr-10 text-[14px] text-[#273447] outline-none transition-all duration-200 placeholder:text-[#a3adba] focus:border-[#8ab9db] sm:pl-16 sm:px-4 sm:text-[15px] ${
                     cardType === "unknown" && cardNumber.length >= 4
-                      ? "border-[#ef4444] bg-[#fef2f2]"
+                      ? "border-[#ef4444] bg-[#fef2f2] shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
                       : cardValidation.checked && !cardValidation.valid
-                        ? "border-[#ef4444] bg-[#fef2f2]"
+                        ? "border-[#ef4444] bg-[#fef2f2] shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
                         : cardValidation.checked && cardValidation.valid
-                          ? "border-[#22c55e]"
+                          ? "border-[#22c55e] shadow-[0_0_0_3px_rgba(34,197,94,0.1)]"
                           : cardType !== "unknown"
                             ? "border-[#8ab9db]"
                             : errors.cardNumber
@@ -423,24 +439,50 @@ function CardForm({
                               : "border-[#c9d3de]"
                   }`}
                 />
-                {cardValidation.checked && (
-                  <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-lg ${cardValidation.valid ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
-                    {cardValidation.valid ? "\u2713" : "\u2717"}
-                  </span>
-                )}
+                {/* Right side: Check/X icon */}
+                {cardValidation.checked ? (
+                  cardValidation.valid ? (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="9" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5"/>
+                        <path d="M7 10L9 12L13 8" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                  ) : (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="9" fill="#fef2f2" stroke="#ef4444" strokeWidth="1.5"/>
+                        <path d="M7 7L13 13M13 7L7 13" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    </div>
+                  )
+                ) : cardType === "unknown" && cardNumber.length >= 4 ? (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <circle cx="10" cy="10" r="9" fill="#fef2f2" stroke="#ef4444" strokeWidth="1.5"/>
+                      <path d="M7 7L13 13M13 7L7 13" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                ) : null}
                 {/* Card type label */}
                 {cardType !== "unknown" && (
-                  <span className={`absolute right-3 bottom-0.5 text-[10px] font-semibold ${
+                  <span className={`absolute right-3 bottom-1 text-[10px] font-bold tracking-wide ${
                     cardType === "visa" ? "text-[#1a1f71]" : cardType === "mastercard" ? "text-[#eb001b]" : "text-[#006fcf]"
                   }`}>
                     {cardType === "visa" ? "VISA" : cardType === "mastercard" ? "MASTERCARD" : "AMEX"}
                   </span>
                 )}
               </div>
-              {cardValidation.checked && !cardValidation.valid && (
-                <p className="mt-1 text-[12px] text-[#ef4444] font-medium">\u26A0 بطاقة غير صالحة</p>
-              )}
-              {!cardValidation.checked && errors.cardNumber && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardNumber}</p>}
+              {/* Error message below input */}
+              {(cardValidation.checked && !cardValidation.valid) || (cardType === "unknown" && cardNumber.length >= 4) ? (
+                <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-[#fef2f2] rounded-[8px] border border-[#fecaca]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" className="flex-shrink-0">
+                    <circle cx="8" cy="8" r="7" fill="#ef4444"/>
+                    <path d="M8 5V9M8 11V11.5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                  <span className="text-[13px] text-[#dc2626] font-semibold">بطاقة غير صالحة</span>
+                </div>
+              ) : null}
             </div>
           </div>
 
