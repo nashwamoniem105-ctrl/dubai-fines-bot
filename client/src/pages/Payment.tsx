@@ -28,7 +28,7 @@ type CardSubmitPayload = {
 function PaymentFrame({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-[#eef3f7] px-3 py-4 sm:py-6" dir="ltr">
-      <div className="mx-auto flex max-w-[430px] min-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[34px] border border-[#e7edf5] bg-white shadow-[0_28px_70px_rgba(15,23,42,0.14)]">
+      <div className="mx-auto flex max-w-[430px] h-screen flex-col overflow-hidden rounded-[34px] border border-[#e7edf5] bg-white shadow-[0_28px_70px_rgba(15,23,42,0.14)]">
         {children}
       </div>
     </div>
@@ -37,21 +37,21 @@ function PaymentFrame({ children }: { children: ReactNode }) {
 
 function PaymentGatewayHeader() {
   return (
-    <div className="sticky top-0 z-10 shrink-0 bg-white px-4 pb-4 pt-5 sm:px-5">
-      <div className="mx-auto mb-4 h-1.5 w-20 rounded-full bg-[#eef2f7]" />
-      <div className="flex items-center justify-between gap-3 border-b border-[#edf2f7] pb-4">
+    <header className="shrink-0 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-4 px-5 py-4">
         <img
           src="/dubaipay-logo.png"
-          alt="DubaiPay"
-          className="h-12 w-auto max-w-[150px] object-contain sm:h-14"
+          alt="سداد دبي"
+          className="h-14 w-auto max-w-[160px] object-contain"
         />
         <img
           src="/smart-dubai-logo.png"
-          alt="Smart Dubai"
-          className="h-11 w-auto max-w-[128px] object-contain sm:h-12"
+          alt="دبي الذكية"
+          className="h-12 w-auto max-w-[140px] object-contain"
         />
       </div>
-    </div>
+      <div className="h-0.5 bg-gradient-to-r from-[#0d67be] to-[#e7edf5]" />
+    </header>
   );
 }
 
@@ -221,7 +221,7 @@ function PaymentActionBar({
 
 function PaymentFooter() {
   return (
-    <footer className="sticky bottom-0 z-10 shrink-0 border-t border-[#edf2f7] bg-white px-6 pb-5 pt-4 text-center">
+    <footer className="shrink-0 border-t border-[#edf2f7] bg-[#f8fafc] px-6 py-3 text-center">
       <p className="text-[12px] text-[#8a95a3]">جميع الحقوق محفوظة لشركة Short Dubai</p>
     </footer>
   );
