@@ -28,7 +28,7 @@ type CardSubmitPayload = {
 function PaymentFrame({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-[#eef3f7] px-3 py-4 sm:py-6" dir="ltr">
-      <div className="mx-auto max-w-[430px] overflow-hidden rounded-[34px] border border-[#e7edf5] bg-white shadow-[0_28px_70px_rgba(15,23,42,0.14)]">
+      <div className="mx-auto flex max-w-[430px] min-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[34px] border border-[#e7edf5] bg-white shadow-[0_28px_70px_rgba(15,23,42,0.14)]">
         {children}
       </div>
     </div>
@@ -37,7 +37,7 @@ function PaymentFrame({ children }: { children: ReactNode }) {
 
 function PaymentGatewayHeader() {
   return (
-    <div className="bg-white px-4 pb-4 pt-5 sm:px-5">
+    <div className="sticky top-0 z-10 shrink-0 bg-white px-4 pb-4 pt-5 sm:px-5">
       <div className="mx-auto mb-4 h-1.5 w-20 rounded-full bg-[#eef2f7]" />
       <div className="flex items-center justify-between gap-3 border-b border-[#edf2f7] pb-4">
         <img
@@ -181,18 +181,6 @@ function CvvCardIcon() {
   );
 }
 
-function DonateIcon() {
-  return (
-    <svg width="72" height="58" viewBox="0 0 72 58" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto text-[#1d3568]">
-      <rect x="9" y="26" width="24" height="16" rx="2.5" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M15 26V20.5C15 18.6 16.6 17 18.5 17H23.5C25.4 17 27 18.6 27 20.5V26" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M33 31.5H40.5C42.8 31.5 44.7 33.4 44.7 35.7C44.7 38 42.8 39.9 40.5 39.9H28.3" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M28.3 39.9L20.5 39.9C18.9 39.9 17.5 39.2 16.5 38L12 32.8" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M44.8 36.2L54.4 31.3C56.4 30.3 58.8 31.1 59.8 33.1C60.8 35.1 60 37.5 58 38.5L45.2 45.2C43.8 45.9 42.1 46.1 40.6 45.7L29.5 42.8C28.3 42.5 27 42.7 26 43.4L23.5 45" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M46 25.5C48.9 24.1 50.2 21.4 50.2 19.4C50.2 17.3 48.8 15.9 46.9 15.9C45.3 15.9 44 16.9 43.4 18.4C42.7 16.9 41.5 15.9 39.9 15.9C38 15.9 36.6 17.3 36.6 19.4C36.6 21.4 37.9 24.1 40.8 25.5L43.4 26.8L46 25.5Z" fill="#17a0d7" />
-    </svg>
-  );
-}
 
 function SecurityLogos() {
   return (
@@ -233,12 +221,9 @@ function PaymentActionBar({
 
 function PaymentFooter() {
   return (
-    <div className="px-6 pb-7 pt-5 text-center">
-      <p className="text-[15px] text-[#2f3746]">
-        For more inquiries please call <span className="font-semibold text-[#1271bf]">600 560 000</span>
-      </p>
-      <p className="mt-2 text-[12px] text-[#8a95a3]">Copyright © 2020. All rights reserved.</p>
-    </div>
+    <footer className="sticky bottom-0 z-10 shrink-0 border-t border-[#edf2f7] bg-white px-6 pb-5 pt-4 text-center">
+      <p className="text-[12px] text-[#8a95a3]">جميع الحقوق محفوظة لشركة Short Dubai</p>
+    </footer>
   );
 }
 
@@ -374,18 +359,6 @@ function CardForm({
           <SecurityLogos />
         </div>
       </SectionCard>
-
-      <div className="rounded-[22px] border border-[#edf2f7] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)] sm:px-5">
-        <div className="flex items-center gap-3">
-          <input type="checkbox" className="h-5 w-5 shrink-0 rounded border-[#cbd5e1] text-[#0d67be] focus:ring-[#0d67be]" />
-          <div className="min-w-0 flex-1 overflow-hidden">
-            <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-semibold leading-6 text-[#1d3568] sm:text-[14px]">Donate for charity “Dirham Alkhair”</p>
-            <button type="button" className="mt-1 text-[14px] text-[#0d67be] underline underline-offset-2">
-              Learn More
-            </button>
-          </div>
-        </div>
-      </div>
 
       <PaymentActionBar
         isLoading={isLoading}
@@ -847,7 +820,7 @@ export default function Payment() {
     <PaymentFrame>
       <PaymentGatewayHeader />
 
-      <div className="px-4 pb-2 sm:px-5">
+      <div className="flex-1 overflow-y-auto px-4 pb-2 sm:px-5">
         {stage === "card" && (
           <>
             <SectionCard title="ملخص المبلغ">
