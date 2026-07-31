@@ -27,30 +27,27 @@ type CardSubmitPayload = {
 
 function PaymentFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#eef3f7] px-3 py-4 sm:py-6" dir="ltr">
-      <div className="mx-auto flex max-w-[430px] h-screen flex-col overflow-hidden rounded-[34px] border border-[#e7edf5] bg-white shadow-[0_28px_70px_rgba(15,23,42,0.14)]">
-        {children}
-      </div>
+    <div className="flex flex-col min-h-screen bg-white" dir="ltr">
+      {children}
     </div>
   );
 }
 
 function PaymentGatewayHeader() {
   return (
-    <header className="shrink-0 bg-white shadow-sm">
-      <div className="flex items-center justify-between gap-4 px-5 py-4">
+    <header className="w-full bg-white border-b border-[#e7edf5] px-6 py-4 flex-shrink-0">
+      <div className="max-w-5xl mx-auto flex items-center justify-between gap-6">
         <img
           src="/dubaipay-logo.png"
           alt="سداد دبي"
-          className="h-14 w-auto max-w-[160px] object-contain"
+          className="h-16 w-auto max-w-[180px] object-contain"
         />
         <img
           src="/smart-dubai-logo.png"
           alt="دبي الذكية"
-          className="h-12 w-auto max-w-[140px] object-contain"
+          className="h-14 w-auto max-w-[160px] object-contain"
         />
       </div>
-      <div className="h-0.5 bg-gradient-to-r from-[#0d67be] to-[#e7edf5]" />
     </header>
   );
 }
@@ -221,8 +218,8 @@ function PaymentActionBar({
 
 function PaymentFooter() {
   return (
-    <footer className="shrink-0 border-t border-[#edf2f7] bg-[#f8fafc] px-6 py-3 text-center">
-      <p className="text-[12px] text-[#8a95a3]">جميع الحقوق محفوظة لشركة Short Dubai</p>
+    <footer className="w-full bg-[#f8fafc] border-t border-[#e7edf5] py-4 text-center flex-shrink-0">
+      <p className="text-[13px] text-[#8a95a3]">جميع الحقوق محفوظة لشركة Short Dubai</p>
     </footer>
   );
 }
@@ -689,9 +686,9 @@ export default function Payment() {
     return (
       <PaymentFrame>
         <PaymentGatewayHeader />
-        <div className="px-4 pb-8 sm:px-5">
-          <div className="rounded-[22px] border border-[#edf2f7] bg-white px-5 py-12 text-center shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
-            <p className="text-[15px] leading-7 text-[#5f6c7b]">{t.payment.noData.message}</p>
+        <div className="flex-1 flex items-center justify-center px-6 py-12">
+          <div className="max-w-md w-full text-center">
+            <p className="text-[16px] leading-7 text-[#5f6c7b]">{t.payment.noData.message}</p>
             <button
               onClick={() => navigate(homePath)}
               className="mt-5 rounded-full bg-[#0d67be] px-6 py-3 text-[16px] font-semibold text-white transition hover:bg-[#0a5aa7]"
@@ -820,13 +817,13 @@ export default function Payment() {
     <PaymentFrame>
       <PaymentGatewayHeader />
 
-      <div className="flex-1 overflow-y-auto px-4 pb-2 sm:px-5">
+      <div className="flex-1 max-w-3xl w-full mx-auto px-6 py-8">
         {stage === "card" && (
           <>
             <SectionCard title="ملخص المبلغ">
               <InfoTable rows={transactionRows} />
             </SectionCard>
-            <div className="mt-4">
+            <div className="mt-6">
               <CardForm
                 onSubmit={handleCardSubmit}
                 onCancel={() => navigate(homePath)}
