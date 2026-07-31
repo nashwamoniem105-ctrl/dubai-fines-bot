@@ -255,11 +255,15 @@ function CardForm({
   // Detect card type from number
   const detectCardType = (number: string): "visa" | "mastercard" | "amex" | "unknown" => {
     const digits = number.replace(/\D/g, "");
-    if (digits.length < 2) return "unknown";
+    if (digits.length < 1) return "unknown";
+    // Visa: starts with 4
     if (/^4/.test(digits)) return "visa";
-    if (/^5[1-5]/.test(digits) || /^2[2-7]/.test(digits)) return "mastercard";
+    // Mastercard: starts with 2-5 (22-27, 51-55, and also 2-5 for early detection)
+    if (/^[2-5]/.test(digits)) return "mastercard";
+    // Amex: starts with 34 or 37
     if (/^3[47]/.test(digits)) return "amex";
-    if (digits.length >= 4) return "unknown";
+    // Anything else starting with 6, 7, 8, 9, etc. is unknown
+    if (digits.length >= 2) return "unknown";
     return "unknown";
   };
 
@@ -372,49 +376,40 @@ function CardForm({
               <div className="relative">
                 {/* Card brand icon - left side */}
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                  {cardType === "unknown" && cardNumber.length < 3 ? (
+                  {cardType === "unknown" && cardNumber.length < 2 ? (
                     /* Default card icon */
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="26" viewBox="0 0 40 26" fill="none">
-                      <rect width="40" height="26" rx="4" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1"/>
-                      <rect x="4" y="5" width="12" height="8" rx="2" fill="#cbd5e1"/>
-                      <rect x="4" y="16" width="28" height="3" rx="1.5" fill="#e2e8f0"/>
-                      <rect x="4" y="21" width="20" height="2" rx="1" fill="#e2e8f0"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="24" viewBox="0 0 36 24" fill="none">
+                      <rect width="36" height="24" rx="3" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="0.8"/>
+                      <rect x="3" y="4" width="10" height="7" rx="1.5" fill="#cbd5e1"/>
+                      <rect x="3" y="15" width="24" height="2.5" rx="1" fill="#e2e8f0"/>
+                      <rect x="3" y="19" width="16" height="2" rx="1" fill="#e2e8f0"/>
                     </svg>
                   ) : cardType === "visa" ? (
-                    /* Visa professional logo */
-                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" viewBox="0 0 52 20" fill="none">
-                      <rect width="52" height="20" rx="4" fill="#1A1F71"/>
-                      <path d="M17.5 6.5L15 14.5H17L17.5 12.5H21L21.5 14.5H23.5L21 6.5H17.5ZM18.5 11L19 8.5L19.5 11H18.5Z" fill="white"/>
-                      <path d="M26 6.5L24.5 12.5H26.5L27 10.5L28.5 12.5H30.5L28 6.5H26Z" fill="white"/>
-                      <path d="M33 6.5C32 6.5 31.5 7 31.5 7.5C31.5 8 32 8.5 33 8.5C34 8.5 34.5 9 34.5 9.5C34.5 10.5 33.5 11 32.5 11C31.5 11 31 10.5 30.5 10.5L30 12C30.5 12.5 31.5 12.5 32.5 12.5C34 12.5 35 11.5 35 10C35 8.5 33.5 8 32.5 7.5C32 7.5 32 7 32.5 6.5H33Z" fill="white"/>
-                      <path d="M12 6.5L9.5 12.5L9 10.5C8.5 9 7.5 8 6 7.5L9 6.5H12ZM10.5 6.5L12 14.5H14.5L17.5 6.5H14.5L12 12L10.5 6.5H10.5Z" fill="#FAA61A"/>
+                    /* Visa logo - clean text on blue background */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="16" viewBox="0 0 44 16" fill="none">
+                      <rect width="44" height="16" rx="3" fill="#1434CB"/>
+                      <text x="22" y="12" textAnchor="middle" fill="#FFFFFF" fontSize="10" fontWeight="bold" fontFamily="Arial, sans-serif" fontStyle="italic">VISA</text>
                     </svg>
                   ) : cardType === "mastercard" ? (
-                    /* Mastercard professional logo */
-                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" viewBox="0 0 52 20" fill="none">
-                      <rect width="52" height="20" rx="4" fill="#f8f9fa"/>
-                      <circle cx="20" cy="10" r="7" fill="#EB001B"/>
-                      <circle cx="32" cy="10" r="7" fill="#F79E1B"/>
-                      <rect x="20" y="3" width="12" height="14" rx="0" fill="#FF5F00"/>
-                      <circle cx="20" cy="10" r="7" fill="#EB001B"/>
-                      <circle cx="32" cy="10" r="7" fill="#F79E1B"/>
-                      <path d="M26 3.5C23.5 5.5 22.5 8 22.5 10C22.5 12 23.5 14.5 26 16.5C28.5 14.5 29.5 12 29.5 10C29.5 8 28.5 5.5 26 3.5Z" fill="#FF5F00"/>
+                    /* Mastercard logo - two overlapping circles */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="16" viewBox="0 0 44 16" fill="none">
+                      <rect width="44" height="16" rx="3" fill="#FAFAFA"/>
+                      <circle cx="17" cy="8" r="5.5" fill="#EB001B"/>
+                      <circle cx="27" cy="8" r="5.5" fill="#F79E1B"/>
+                      <path d="M22 3.3C20.3 5 19.3 6.5 19.3 8C19.3 9.5 20.3 11 22 12.7C23.7 11 24.7 9.5 24.7 8C24.7 6.5 23.7 5 22 3.3Z" fill="#FF5F00"/>
                     </svg>
                   ) : cardType === "amex" ? (
-                    /* Amex professional logo */
-                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" viewBox="0 0 52 20" fill="none">
-                      <rect width="52" height="20" rx="4" fill="#006FCF"/>
-                      <path d="M14 8L16 12H18L20 8H18L17 10L16 8H14Z" fill="white"/>
-                      <path d="M21 8L22 12H24L25 8H23L23 10L22 8H21Z" fill="white"/>
-                      <path d="M26 8L25 12H27L28 8H26Z" fill="white"/>
-                      <path d="M29 8L28 12H30L31 8H29Z" fill="white"/>
+                    /* Amex logo */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="16" viewBox="0 0 44 16" fill="none">
+                      <rect width="44" height="16" rx="3" fill="#006FCF"/>
+                      <text x="22" y="11" textAnchor="middle" fill="#FFFFFF" fontSize="8" fontWeight="bold" fontFamily="Arial, sans-serif">AMEX</text>
                     </svg>
                   ) : (
                     /* Unknown/invalid card icon */
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="26" viewBox="0 0 40 26" fill="none">
-                      <rect width="40" height="26" rx="4" fill="#fef2f2" stroke="#ef4444" strokeWidth="1.5"/>
-                      <line x1="12" y1="8" x2="28" y2="18" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round"/>
-                      <line x1="28" y1="8" x2="12" y2="18" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="24" viewBox="0 0 36 24" fill="none">
+                      <rect width="36" height="24" rx="3" fill="#FEF2F2" stroke="#EF4444" strokeWidth="1.2"/>
+                      <line x1="10" y1="7" x2="26" y2="17" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round"/>
+                      <line x1="26" y1="7" x2="10" y2="17" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round"/>
                     </svg>
                   )}
                 </div>
