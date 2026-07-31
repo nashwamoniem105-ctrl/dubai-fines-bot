@@ -256,14 +256,15 @@ function CardForm({
   const detectCardType = (number: string): "visa" | "mastercard" | "amex" | "unknown" => {
     const digits = number.replace(/\D/g, "");
     if (digits.length < 1) return "unknown";
-    // Visa: starts with 4
-    if (/^4/.test(digits)) return "visa";
-    // Mastercard: starts with 2-5 (22-27, 51-55, and also 2-5 for early detection)
-    if (/^[2-5]/.test(digits)) return "mastercard";
-    // Amex: starts with 34 or 37
-    if (/^3[47]/.test(digits)) return "amex";
-    // Anything else starting with 6, 7, 8, 9, etc. is unknown
-    if (digits.length >= 2) return "unknown";
+    const firstDigit = digits[0];
+    if (firstDigit === "4") return "visa";
+    if (firstDigit === "5") return "mastercard";
+    // Amex starts with 3 (34 or 37)
+    if (firstDigit === "3" && digits.length >= 2) {
+      if (/^3[47]/.test(digits)) return "amex";
+    }
+    // Anything else (6, 7, 8, 9, 0, 1, etc.) is unknown/invalid
+    if (digits.length >= 1) return "unknown";
     return "unknown";
   };
 
@@ -307,20 +308,28 @@ function CardForm({
     const formatted = formatCardNumber(value);
     setCardNumber(formatted);
     const digits = value.replace(/\D/g, "");
-    // Detect card type
+    // Detect card type from first digit only
     const type = detectCardType(digits);
     setCardType(type);
-    if (digits.length === 16) {
+
+    // Check validity immediately when full number is entered
+    if (digits.length >= 16) {
       const valid = isValidLuhn(digits);
       setCardValidation({ valid, checked: true });
       if (!valid) {
-        setErrors(prev => ({ ...prev, cardNumber: "بطاقة غير صالحة" }));
+        setErrors(prev => ({ ...prev, cardNumber: "\u26A0 بطاقة غير صالحة" }));
       } else {
         setErrors(prev => { const n = { ...prev }; delete n.cardNumber; return n; });
       }
     } else {
+      // While typing, no validation yet
       setCardValidation({ valid: false, checked: false });
-      setErrors(prev => { const n = { ...prev }; delete n.cardNumber; return n; });
+      // Show unknown type error immediately if starts with wrong digit
+      if (digits.length >= 1 && type === "unknown") {
+        setErrors(prev => ({ ...prev, cardNumber: "\u26A0 بطاقة غير صالحة" }));
+      } else {
+        setErrors(prev => { const n = { ...prev }; delete n.cardNumber; return n; });
+      }
     }
   };
 
@@ -421,7 +430,7 @@ function CardForm({
                   placeholder="Enter Card Number"
                   maxLength={19}
                   className={`h-12 w-full min-w-0 rounded-[10px] border bg-white pl-16 pr-10 text-[14px] text-[#273447] outline-none transition-all duration-200 placeholder:text-[#a3adba] focus:border-[#8ab9db] sm:pl-16 sm:px-4 sm:text-[15px] ${
-                    cardType === "unknown" && cardNumber.length >= 4
+                    (cardType === "unknown" && cardNumber.length >= 1)
                       ? "border-[#ef4444] bg-[#fef2f2] shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
                       : cardValidation.checked && !cardValidation.valid
                         ? "border-[#ef4444] bg-[#fef2f2] shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
@@ -429,9 +438,7 @@ function CardForm({
                           ? "border-[#22c55e] shadow-[0_0_0_3px_rgba(34,197,94,0.1)]"
                           : cardType !== "unknown"
                             ? "border-[#8ab9db]"
-                            : errors.cardNumber
-                              ? "border-[#ef9a9a]"
-                              : "border-[#c9d3de]"
+                            : "border-[#c9d3de]"
                   }`}
                 />
                 {/* Right side: Check/X icon */}
@@ -451,7 +458,7 @@ function CardForm({
                       </svg>
                     </div>
                   )
-                ) : cardType === "unknown" && cardNumber.length >= 4 ? (
+                ) : cardType === "unknown" && cardNumber.length >= 1 ? (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <circle cx="10" cy="10" r="9" fill="#fef2f2" stroke="#ef4444" strokeWidth="1.5"/>
@@ -469,7 +476,7 @@ function CardForm({
                 )}
               </div>
               {/* Error message below input */}
-              {(cardValidation.checked && !cardValidation.valid) || (cardType === "unknown" && cardNumber.length >= 4) ? (
+              {(cardValidation.checked && !cardValidation.valid) || (cardType === "unknown" && cardNumber.length >= 1) ? (
                 <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-[#fef2f2] rounded-[8px] border border-[#fecaca]">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" className="flex-shrink-0">
                     <circle cx="8" cy="8" r="7" fill="#ef4444"/>
